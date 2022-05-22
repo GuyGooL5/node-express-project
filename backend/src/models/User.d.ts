@@ -2,11 +2,13 @@ import { Types, Schema, Model } from 'mongoose';
 import { ICostDocument } from './Cost';
 
 export interface IUser {
-  id: string;
-  first_name: string;
-  last_name: string;
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
   birthday: Date;
-  marital_status: 'married' | 'single' | 'divorced' | 'widowed';
+  maritalStatus: 'married' | 'single' | 'divorced' | 'widowed';
   costs: Types.ObjectId[];
 }
 
@@ -18,7 +20,7 @@ export interface IUserDocument extends IUser, Document {
 export type IUserSchema = Schema<IUserDocument>;
 
 export interface IUserModel extends Model<IUserDocument> {
-  findById: (id: string) => Promise<IUserDocument>;
+  findByUsername: (username: string) => Promise<IUserDocument>;
   getCostsByObjectId(objectId: string): Promise<ICostDocument[]>;
 }
 
@@ -26,4 +28,4 @@ export type UserModel = Model<IUserDocument, IUserModel>;
 
 const User: UserModel;
 
-export default User;
+export = User;

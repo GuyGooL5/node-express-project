@@ -4,25 +4,26 @@ const bcrypt = require('bcrypt');
 const { hashPassword } = require('../utils/passwords');
 
 const UserSchema = new mongoose.Schema({
-  id: { type: String, required: true },
+  username: { type: String, required: true },
   password: { type: String, required: true, set: hashPassword },
-  first_name: { type: String, required: true },
-  last_name: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   birthday: { type: Date, required: true },
-  marital_status: { type: String, required: true },
+  // TODO: Add enum for values
+  maritalStatus: { type: String, required: true },
   costs: [{ type: mongoose.Types.ObjectId, ref: 'Cost' }],
 });
 
 // Virtual Properties
 
-UserSchema.virtual('full_name')
+UserSchema.virtual('fullName')
   .get(function () {
-    return `${this.first_name} ${this.last_name}`;
+    return `${this.firstName} ${this.lastName}`;
   })
-  .set(function (full_name) {
-    const [first_name, last_name] = full_name.split(' ');
-    this.first_name = first_name;
-    this.last_name = last_name;
+  .set(function (fullName) {
+    const [firstName, ...rest] = fullName.split(' ');
+    this.firstName = firstName;
+    this.lastName = rest.join(' ');
   });
 
 // Instance Methods

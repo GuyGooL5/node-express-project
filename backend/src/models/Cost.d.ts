@@ -19,4 +19,4 @@ export type CostModel = Model<ICostDocument, ICostModel>;
 
 const Cost: CostModel;
 
-export default Cost;
+export = Cost;
