@@ -1,4 +1,4 @@
-import { Types, Schema, Model } from 'mongoose';
+import { Types, Schema, Model, Document } from 'mongoose';
 import { ICostDocument } from './Cost';
 
 export interface IUser {
@@ -6,26 +6,31 @@ export interface IUser {
   password: string;
   firstName: string;
   lastName: string;
-  fullName: string;
   birthday: Date;
   maritalStatus: 'married' | 'single' | 'divorced' | 'widowed';
   costs: Types.ObjectId[];
 }
 
-export interface IUserDocument extends IUser, Document {
+export type IUserSchema = Schema<IUser>;
+
+export type IUserDocument<T = any, TQueryHelpers = any> = Document<T, TQueryHelpers, IUser>;
+
+export interface IUserQueryHelpers {}
+
+export interface IUserMethodsAndOverrides {
   addCost: (objectId: string) => Promise<void>;
   checkPassword: (password: string) => Promise<boolean>;
-}
-
-export type IUserSchema = Schema<IUserDocument>;
-
-export interface IUserModel extends Model<IUserDocument> {
   findByUsername: (username: string) => Promise<IUserDocument>;
   getCostsByObjectId(objectId: string): Promise<ICostDocument[]>;
 }
 
-export type UserModel = Model<IUserDocument, IUserModel>;
+export interface IUserVirtuals {
+  fullName: string;
+}
 
-const User: UserModel;
+export type IUserModel = Model<IUserSchema, IUserQueryHelpers, IUserMethodsAndOverrides, IUserVirtuals>;
 
+declare const User: IUserModel;
+
+//@ts-ignore
 export = User;
