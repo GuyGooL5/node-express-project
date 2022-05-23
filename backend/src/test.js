@@ -9,14 +9,10 @@ const run = async () => {
   const mongoose = await connect(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME);
   console.log('Database connected');
 
-   const cost = await  Cost.create({
-    category: 'other',
-    description: 'bought database service',
-    sum: 100,
-    owner: '62892252a41c5e68d8f1a540',
-  });
+  const user = new User();
 
-  await cost.save();
+  User.cost
+  Cost.getow
 
   mongoose.connection.close();
   console.log('Database disconnected');
