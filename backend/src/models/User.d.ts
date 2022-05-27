@@ -1,34 +1,46 @@
-import { Types, Schema, Model, Document } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import { ICostDocument } from './Cost';
+import { CreateDocument, CreateModel } from './util';
 
 export interface IUser {
-  username: string;
+  idNumber: string;
   password: string;
   firstName: string;
   lastName: string;
   birthday: Date;
   maritalStatus: 'married' | 'single' | 'divorced' | 'widowed';
-  costs: Types.ObjectId[];
+  costs: ObjectId[];
 }
-
-export type IUserSchema = Schema<IUser>;
-
-export type IUserDocument<T = any, TQueryHelpers = any> = Document<T, TQueryHelpers, IUser>;
-
-export interface IUserQueryHelpers {}
+interface IUserQueryHelpers {}
 
 export interface IUserMethodsAndOverrides {
-  addCost: (objectId: string) => Promise<void>;
-  checkPassword: (password: string) => Promise<boolean>;
-  findByUsername: (username: string) => Promise<IUserDocument>;
-  getCostsByObjectId(objectId: string): Promise<ICostDocument[]>;
+  addCost(objectId: string): Promise<void>;
+  checkPassword(password: string): Promise<boolean>;
+  getCosts(): Promise<ICostDocument[]>;
 }
 
 export interface IUserVirtuals {
   fullName: string;
 }
 
-export type IUserModel = Model<IUserSchema, IUserQueryHelpers, IUserMethodsAndOverrides, IUserVirtuals>;
+export interface IUserStatics {
+  findByIdNumber(idNumber: string): Promise<IUserDocument>;
+}
+
+export type IUserDocument = CreateDocument<
+  IUser,
+  IUserQueryHelpers,
+  IUserMethodsAndOverrides,
+  IUserVirtuals
+>;
+
+export type IUserModel = CreateModel<
+  IUser,
+  IUserQueryHelpers,
+  IUserMethodsAndOverrides,
+  IUserVirtuals,
+  IUserStatics
+>;
 
 declare const User: IUserModel;
 

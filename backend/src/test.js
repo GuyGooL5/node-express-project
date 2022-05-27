@@ -9,10 +9,14 @@ const run = async () => {
   const mongoose = await connect(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME);
   console.log('Database connected');
 
-  const user = new User();
-
-  User.cost
-  Cost.getow
+  const user = new User({
+    idNumber: '123456789',
+    password: 'password',
+    firstName: 'John',
+    lastName: 'Doe',
+    birthday: new Date(),
+    maritalStatus: '',
+  });
 
   mongoose.connection.close();
   console.log('Database disconnected');

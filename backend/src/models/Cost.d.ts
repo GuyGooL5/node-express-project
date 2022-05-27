@@ -1,17 +1,21 @@
-import { Types, Schema, Model, Document } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import { IUserDocument } from './User';
+import { CreateDocument, CreateModel } from './util';
 
-export type CostCategory = 'food' | 'transport' | 'house' | 'maintenance' | 'other';
+export type CostCategory =
+  | 'food'
+  | 'transport'
+  | 'house'
+  | 'maintenance'
+  | 'other';
+
+  
 export interface ICost {
   category: CostCategory;
   description: string;
   sum: number;
-  owner: Types.ObjectId;
+  owner: ObjectId;
 }
-
-export type ICostSchema = Schema<ICost>;
-
-export type ICostDocument<T = any, TQueryHelpers = any> = Document<T, TQueryHelpers, ICost>;
 
 export interface ICostQueryHelpers {}
 
@@ -21,7 +25,22 @@ export interface ICostMethodsAndOverrides {
 
 export interface ICostVirtuals {}
 
-export type ICostModel = Model<ICost, ICostQueryHelpers, ICostMethodsAndOverrides, ICostVirtuals>;
+export interface ICostStatics {}
+
+export type ICostDocument = CreateDocument<
+  ICost,
+  ICostQueryHelpers,
+  ICostMethodsAndOverrides,
+  ICostVirtuals
+>;
+
+export type ICostModel = CreateModel<
+  ICost,
+  ICostQueryHelpers,
+  ICostMethodsAndOverrides,
+  ICostVirtuals,
+  ICostStatics
+>;
 
 declare const Cost: ICostModel;
 
