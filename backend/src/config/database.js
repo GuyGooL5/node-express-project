@@ -5,6 +5,4 @@ const connect = (username, password, host, dbName = 'test') => {
   return mongoose.connect(uri, { useNewUrlParser: true, dbName });
 };
 
-module.exports = {
-  connect,
-};
+module.exports = { connect };
