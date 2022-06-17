@@ -10,8 +10,9 @@ const addCost = async function (category, sum, description, userObjectId) {
     cost.sum = sum;
     cost.description = description;
     cost.owner = mongoose.Types.ObjectId(userObjectId);
+    let addedCost;
     try {
-        const addedCost = await cost.save();
+        addedCost = await cost.save();
     } catch (e) {
         console.error("Could not add cost! Failed at saving cost.");
         return;
