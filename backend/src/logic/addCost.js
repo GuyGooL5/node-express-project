@@ -22,7 +22,7 @@ const addCost = async function (category, sum, description, userObjectId) {
 
     const currMonthYear = getMonthYearFromDate(addedCost.createdAt);
 
-    let userMc = user.monthlyCosts;;
+    let userMc = user.monthlyCosts;
     let currMc = userMc.get(currMonthYear);
     if (!currMc || currMc.sum === 0) {
         currMc = new MonthCost({
@@ -38,7 +38,7 @@ const addCost = async function (category, sum, description, userObjectId) {
 
     user.monthlyCosts.set(currMonthYear, currMc);
     try {
-        const addedUser = await user.save();
+        await user.save();
     } catch (e) {
         console.error("Could not add cost! Failed at saving user.");
         try {
