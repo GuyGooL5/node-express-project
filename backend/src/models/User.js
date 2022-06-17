@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { MonthCostSchema } = require("./MonthCost");
 
 const { hashPassword } = require('../utils/passwords');
+
 
 const UserSchema = new mongoose.Schema({
   idNumber: { type: String, required: true },
@@ -10,8 +12,11 @@ const UserSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   birthday: { type: Date, required: true },
   // TODO: Add enum for values
-  maritalStatus: { type: String, required: true },
-  costs: [{ type: mongoose.Types.ObjectId, ref: 'costs' }],
+  maritalStatus: { type: String, required: false },
+  monthlyCosts: {
+    type: Map,
+    of: MonthCostSchema
+  },
 });
 
 // Virtual Properties
