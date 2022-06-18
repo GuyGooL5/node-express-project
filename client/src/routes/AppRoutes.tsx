@@ -11,7 +11,6 @@ import ChangePasswordRoute from "./ChangePasswordRoute/ChangePasswordRoute";
 import ClientsRoute from "./ClientsRoute/ClientsRoute";
 import LoginRoute from "./LoginRoute/LoginRoute";
 import RegisterRoute from "./RegisterRoute/RegisterRoute";
-import ForgotPasswordRoute from "./ForgotPasswordRoute/ForgotPasswordRoute";
 
 const HomeLayout: React.FC = ({ children }) => (
   <>
@@ -59,10 +58,6 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/register"
         element={userFallback(<RegisterRoute />, <Navigate to="/" />)}
-      />
-      <Route
-        path="/forgotPassword"
-        element={userFallback(<ForgotPasswordRoute />, <Navigate to="/" />)}
       />
     </Routes>
   );

@@ -1,5 +1,5 @@
 import { FormEventHandler, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Container,
@@ -7,7 +7,6 @@ import {
   Snackbar,
   TextField,
   Typography,
-  styled,
 } from "@mui/material";
 
 import Logo from "$/components/Logo";
