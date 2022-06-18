@@ -1,15 +1,12 @@
-import { protectedRequest } from "./requests";
+import backendClient from "$/config/backendClient";
 
 const url = "api/auth";
 
+type ResponseType = { user: any; token: string };
 
-type ResponseType = { username: string, authenticated: boolean };
-
-const authUser = () =>
-  async (onSuccess: (username: string, authenticated: boolean) => void, onError: (error: string) => void) => {
-    const response = await protectedRequest<ResponseType>("GET", url);
-    if (!response.success) return onError(response.error ?? "internal error");
-    return onSuccess(response.data.username, response.data.authenticated);
-  };
+const authUser = async (): Promise<ResponseType> => {
+  const response = await backendClient.get(url);
+  return response.data;
+};
 
 export default authUser;

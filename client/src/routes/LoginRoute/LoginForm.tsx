@@ -1,6 +1,14 @@
-import { FormEventHandler, useState } from "react"
+import { FormEventHandler, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Container, Stack, Snackbar, TextField, Typography, styled } from "@mui/material";
+import {
+  Button,
+  Container,
+  Stack,
+  Snackbar,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 
 import Logo from "$/components/Logo";
 import PasswordField from "$/components/PasswordField";
@@ -13,10 +21,7 @@ import authUser from "$/api/authUser";
 import JwtManager from "$/utils/JwtManager";
 import LoadingButton from "$/components/LoadingButton";
 
-
-
 export default function LoginForm() {
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -27,69 +32,87 @@ export default function LoginForm() {
 
   const navigate = useNavigate();
 
+  const authenticate = async () => {
+    try {
+      const res = await authUser();
+      setUser(res.user);
+    } catch (err: any) {
+      setError(`${err?.error}`);
+    }
+  };
 
-  function onUserAuthenticated(_username: string, authenticateD: boolean) {
-    setUser(_username);
-  }
-
-  function onUserAuthFail(_error: string) {
-    alert(_error);
-  }
-
-  function onSuccess(token: string) {
-    JwtManager.set(token);
-    authUser()(onUserAuthenticated, onUserAuthFail);
-  }
-
-  function onError(_error: string) {
-    setError(_error);
-  }
-
-  const submit: FormEventHandler<HTMLFormElement> = e => {
+  const submit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     onSumbit();
-  }
+  };
 
   const onSumbit = async () => {
     setError("");
     setLoading(true);
-    await login(username, password)(onSuccess, onError);
-    setLoading(false);
-  }
+    try {
+      const { token } = await login(username, password);
+      JwtManager.set(token);
+      authenticate();
+    } catch (e: any) {
+      setError(`${e?.error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navigateToRegister = () => navigate("/register");
 
-
-
-  return <form onSubmit={submit}>
-    <Container maxWidth="sm">
-      <Stack spacing={2} >
-        <Logo height={64} />
-        <Typography variant="h3" color="primary">Welcome Back!</Typography>
-        <TextField fullWidth required variant="standard" label="Username" name="username"
-          value={username} onChange={e => setUsername(e.target.value)} />
-        <PasswordField fullWidth required variant="standard" label="Password" name="password"
-          value={password} onChange={e => setPassword(e.target.value)} />
-        <Stack direction="row" spacing={1}>
-          <LoadingButton loading={loading} variant="contained" type="submit">Login</LoadingButton>
-          <Button disabled={loading} variant="outlined"
-            onClick={navigateToRegister}>Sign-up</Button>
+  return (
+    <form onSubmit={submit}>
+      <Container maxWidth="sm">
+        <Stack spacing={2}>
+          <Logo height={64} />
+          <Typography variant="h3" color="primary">
+            Hi, welcome back!
+          </Typography>
+          <TextField
+            fullWidth
+            required
+            variant="standard"
+            label="ID Number"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <PasswordField
+            fullWidth
+            required
+            variant="standard"
+            label="Password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Stack direction="row" spacing={1}>
+            <LoadingButton loading={loading} variant="contained" type="submit">
+              Login
+            </LoadingButton>
+            <Button
+              disabled={loading}
+              variant="outlined"
+              onClick={navigateToRegister}
+            >
+              Sign-up
+            </Button>
+          </Stack>
         </Stack>
-        <StyledLink to="/forgotPassword">
-          <Typography variant="subtitle1" color="primary">Forgot password?</Typography>
-        </StyledLink>
-      </Stack>
-      <Snackbar open={!!error.length} message={error}
-        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-        action={<Button variant="text" onClick={() => setError("")}>Dismiss</Button>} />
-    </Container>
-  </form >
+        <Snackbar
+          open={!!error}
+          message={error}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          onClose={() => setError("")}
+          action={
+            <Button variant="text" onClick={() => setError("")}>
+              Dismiss
+            </Button>
+          }
+        />
+      </Container>
+    </form>
+  );
 }
-
-
-const StyledLink = styled(Link)`
-  text-decoration:none;
-  &:hover *{
-    font-weight:700;
-  }
-`;

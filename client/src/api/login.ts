@@ -1,19 +1,15 @@
-import { request } from "./requests";
+import backendClient from "$/config/backendClient";
 
 const url = "api/login";
 
 type ResponseType = { token: string };
 
-const login =
-  (username: string, password: string) =>
-    async (onSuccess: (token: string) => void, onError: (error: string) => void) => {
-      try {
-        const response = await request<ResponseType>("POST", url, { username, password });
-        if (!response.success) return onError(response.error ?? "Internal Error");
-        return onSuccess(response.data.token);
-      } catch (e) {
-        onError("Internal Error");
-      }
-    };
+const login = async (
+  username: string,
+  password: string
+): Promise<ResponseType> => {
+  const response = await backendClient.post(url, { username, password });
+  return response.data;
+};
 
 export default login;

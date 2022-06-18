@@ -1,57 +1,70 @@
-import { LinearProgress } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
-import { Navigate, Outlet, Route, Routes } from 'react-router'
-import authUser from '$/api/authUser'
-import Navbar from '$/components/Navbar/Navbar'
-import { useAuth } from '$/context/AuthContext/AuthContext'
-import JwtManager from '$/utils/JwtManager'
-import ChangePasswordRoute from './ChangePasswordRoute/ChangePasswordRoute'
-import ClientsRoute from './ClientsRoute/ClientsRoute'
-import LoginRoute from './LoginRoute/LoginRoute'
-import RegisterRoute from './RegisterRoute/RegisterRoute'
-import Footer from '$/components/Footer'
-import ForgotPasswordRoute from './ForgotPasswordRoute/ForgotPasswordRoute'
+import { LinearProgress } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet, Route, Routes } from "react-router";
+import authUser from "$/api/authUser";
+import Navbar from "$/components/Navbar/Navbar";
+import { useAuth } from "$/context/AuthContext/AuthContext";
 
+import Footer from "$/components/Footer";
 
-const HomeLayout: React.FC = ({ children }) => <><Navbar /><Outlet />{children}<Footer /></>
+import ChangePasswordRoute from "./ChangePasswordRoute/ChangePasswordRoute";
+import ClientsRoute from "./ClientsRoute/ClientsRoute";
+import LoginRoute from "./LoginRoute/LoginRoute";
+import RegisterRoute from "./RegisterRoute/RegisterRoute";
+import ForgotPasswordRoute from "./ForgotPasswordRoute/ForgotPasswordRoute";
 
-
+const HomeLayout: React.FC = ({ children }) => (
+  <>
+    <Navbar />
+    <Outlet />
+    {children}
+    <Footer />
+  </>
+);
 
 const AppRoutes: React.FC = () => {
-
   const [loading, setLoading] = useState(false);
-  const { user, setUser } = useAuth();
+  const { user, setUser, setToken } = useAuth();
 
-
-  const userFallback = (fallback: JSX.Element, exists: JSX.Element) => user ? exists : fallback;
-
-  const onAuthSuccess = useCallback((username: string, authenticated: boolean) => {
-    setUser(username);
-  }, [setUser]);
-
-  const onAuthFailed = useCallback((e: string) => {
-    JwtManager.delete();
-  }, [])
+  const userFallback = (fallback: JSX.Element, exists: JSX.Element) =>
+    user ? exists : fallback;
 
   useEffect(() => {
     setLoading(true);
-    authUser()(onAuthSuccess, onAuthFailed)
+    authUser()
+      .then((response) => {
+        setUser(response.user);
+        setToken(response.token);
+      })
+      .catch(() => setToken(null))
       .finally(() => setLoading(false));
-  }, [onAuthSuccess, onAuthFailed]);
+  }, []);
 
-
-
-  return loading ? <LinearProgress /> :
+  return loading ? (
+    <LinearProgress />
+  ) : (
     <Routes>
-      <Route path="*" element={userFallback(<Navigate to="/login" />, <HomeLayout />)} >
+      <Route
+        path="*"
+        element={userFallback(<Navigate to="/login" />, <HomeLayout />)}
+      >
         <Route path="changePassword" element={<ChangePasswordRoute />} />
         <Route path="clients/*" element={<ClientsRoute />} />
       </Route>
 
-      <Route path="/login" element={userFallback(<LoginRoute />, <Navigate to="/" />)} />
-      <Route path="/register" element={userFallback(<RegisterRoute />, <Navigate to="/" />)} />
-      <Route path="/forgotPassword" element={userFallback(<ForgotPasswordRoute />, <Navigate to="/" />)} />
+      <Route
+        path="/login"
+        element={userFallback(<LoginRoute />, <Navigate to="/" />)}
+      />
+      <Route
+        path="/register"
+        element={userFallback(<RegisterRoute />, <Navigate to="/" />)}
+      />
+      <Route
+        path="/forgotPassword"
+        element={userFallback(<ForgotPasswordRoute />, <Navigate to="/" />)}
+      />
     </Routes>
-}
+  );
+};
 export default AppRoutes;
-
