@@ -1,9 +1,14 @@
 const User = require('../../models/User');
 const { withStopReturnErrorHandler } = require('../../handlers/errorHandlers');
 
-const getAllCosts = async (req, res) => {
+const getCosts = async (req, res) => {
   const { userId } = req.user;
+  const { year, months } = req.query;
 
+  if (months && !year)
+    return res.status(400).json({ error: 'Year is required' });
+
+  return res.json({ year, months });
   const user = await User.findById(userId);
 
   const costs = await user.getCosts();
@@ -11,4 +16,4 @@ const getAllCosts = async (req, res) => {
   res.json({ costs });
 };
 
-module.exports = withStopReturnErrorHandler(getAllCosts);
+module.exports = withStopReturnErrorHandler(getCosts);
