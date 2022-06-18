@@ -1,7 +1,7 @@
-const getAllCosts = require('./getAllCosts');
-
 const costsRouter = require('express').Router();
 
-costsRouter.get('/',  getAllCosts);
+costsRouter.get('/', require('./getAllCosts'));
+costsRouter.post('/', require('./addCost'));
+costsRouter.delete('/:costId', require('./deleteCost'));
 
 module.exports = costsRouter;
