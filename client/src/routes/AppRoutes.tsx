@@ -7,7 +7,6 @@ import { useAuth } from "$/context/AuthContext/AuthContext";
 
 import Footer from "$/components/Footer";
 
-import ChangePasswordRoute from "./ChangePasswordRoute/ChangePasswordRoute";
 import ClientsRoute from "./ClientsRoute/ClientsRoute";
 import LoginRoute from "./LoginRoute/LoginRoute";
 import RegisterRoute from "./RegisterRoute/RegisterRoute";
@@ -47,7 +46,6 @@ const AppRoutes: React.FC = () => {
         path="*"
         element={userFallback(<Navigate to="/login" />, <HomeLayout />)}
       >
-        <Route path="changePassword" element={<ChangePasswordRoute />} />
         <Route path="clients/*" element={<ClientsRoute />} />
       </Route>
 
