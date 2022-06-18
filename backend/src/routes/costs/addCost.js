@@ -1,7 +1,3 @@
-const Cost = require('../../models/Cost');
-
-const addCostLogic = require('../../logic/addCost');
-
 const { withStopReturnErrorHandler } = require('../../handlers/errorHandlers');
 const User = require('../../models/User');
 

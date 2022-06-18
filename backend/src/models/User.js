@@ -49,18 +49,18 @@ UserSchema.method('addCost', async function ({ category, price, description }) {
     throw new Error('Could not add cost! Failed at saving cost.');
   });
 
-  const currMonthYear = getFormattedDate(cost.createdAt);
+  const monthYear = getFormattedDate(cost.createdAt);
 
-  const { sum: prevSum, costs: prevCosts } = this.monthlyCosts
-    .get(currMonthYear)
-    ?.toJSON() ?? { sum: 0, costs: [] };
+  await this.populate(`monthlyCosts.${monthYear}.costs`);
+
+  const costs = this.monthlyCosts.get(monthYear)?.costs ?? [];
+  costs.push(cost);
+
+  const sum = costs.reduce((acc, curr) => acc + curr.price, 0);
 
   this.monthlyCosts.set(
-    currMonthYear,
-    new MonthCost({
-      sum: prevSum + cost.price,
-      costs: [...prevCosts, cost._id],
-    }),
+    monthYear,
+    new MonthCost({ sum, costs: costs.map((costItem) => costItem._id) }),
   );
 
   await this.save().catch(() => {
