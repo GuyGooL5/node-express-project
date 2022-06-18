@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { ICostDocument } from './Cost';
+import { IMonthCostDocument } from './MonthCost';
 import { CreateDocument, CreateModel } from './util';
 
 export interface IUser {
@@ -8,15 +9,15 @@ export interface IUser {
   firstName: string;
   lastName: string;
   birthday: Date;
-  maritalStatus: 'married' | 'single' | 'divorced' | 'widowed';
-  costs: ObjectId[];
+  maritalStatus?: 'married' | 'single' | 'divorced' | 'widowed';
+  monthlyCosts: Record<string, IMonthCostDocument>;
 }
 interface IUserQueryHelpers {}
 
 export interface IUserMethodsAndOverrides {
   addCost(objectId: string): Promise<void>;
   checkPassword(password: string): Promise<boolean>;
-  getCosts(): Promise<ICostDocument[]>;
+  getMonthCosts(month: number, year: number): Promise<IMonthCostDocument>;
 }
 
 export interface IUserVirtuals {

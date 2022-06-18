@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const { MonthCostSchema } = require('./MonthCost');
 
 const { hashPassword } = require('../utils/auth');
 
@@ -9,9 +10,15 @@ const UserSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   birthday: { type: Date, required: true },
-  // TODO: Add enum for values
-  maritalStatus: { type: String, required: true },
-  costs: [{ type: mongoose.Types.ObjectId, ref: 'costs' }],
+  maritalStatus: {
+    type: String,
+    required: false,
+    enum: ['married', 'single', 'divorced', 'widowed'],
+  },
+  monthlyCosts: {
+    type: Map,
+    of: MonthCostSchema,
+  },
 });
 
 // Virtual Properties
@@ -37,11 +44,19 @@ UserSchema.method('checkPassword', async function (password) {
   return bcrypt.compare(password, this.password);
 });
 
-UserSchema.method('getCosts', async function () {
-  return this.populate('costs')
-    .exec()
-    .then((user) => user.costs);
+UserSchema.method('getMonthCosts', async function (month, year) {
+  month = ('0' + month).slice(-2);
+  const monthYear = `${month}_${year}`;
+
+  const monthCostReport = this.monthlyCosts.get(monthYear);
+  if (!monthCostReport) return { sum: 0, costs: [] };
+
+  await this.populate(`monthlyCosts.${monthYear}.costs`);
+  const { sum, costs } = monthCostReport.toJSON();
+
+  return { sum, costs };
 });
+
 // Static Methods
 
 UserSchema.statics.findByIdNumber = function (idNumber) {
