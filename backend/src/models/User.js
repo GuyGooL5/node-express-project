@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const { hashPassword } = require('../utils/passwords');
+const { hashPassword } = require('../utils/auth');
 
 const UserSchema = new mongoose.Schema({
   idNumber: { type: String, required: true },
