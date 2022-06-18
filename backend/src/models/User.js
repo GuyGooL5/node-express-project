@@ -77,6 +77,47 @@ UserSchema.method('addCost', async function ({ category, price, description }) {
   return cost.toJSON();
 });
 
+UserSchema.method('deleteCost', async function (costId) {
+  const cost = await Cost.findById(costId);
+  if (!cost) {
+    throw new Error('Could not find cost to delete!');
+  }
+
+  const deleteResult = await Cost.deleteOne({ _id: cost._id }).catch((e) => {
+    throw new Error('Could not delete cost!');
+  });
+
+  const monthYear = getFormattedDate(cost.createdAt);
+
+  await this.populate(`monthlyCosts.${monthYear}.costs`);
+
+  const costs = this.monthlyCosts.get(monthYear)?.costs ?? [];
+
+  const filteredCosts = costs.filter(
+    (costItem) => costItem._id.toString() !== costId,
+  );
+
+  const sum = filteredCosts.reduce((acc, curr) => acc + curr.price, 0);
+
+  this.monthlyCosts.set(
+    monthYear,
+    new MonthCost({
+      sum,
+      costs: filteredCosts.map((costItem) => costItem._id),
+    }),
+  );
+
+  try {
+    await this.save();
+  } catch {
+    throw new Error(
+      "Failed at adding cost to user's monthly costs! Failed at deleting cost from database!",
+    );
+  }
+
+  return deleteResult;
+});
+
 UserSchema.method('checkPassword', async function (password) {
   return bcrypt.compare(password, this.password);
 });

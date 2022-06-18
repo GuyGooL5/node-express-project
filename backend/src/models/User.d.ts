@@ -16,6 +16,7 @@ interface IUserQueryHelpers {}
 
 export interface IUserMethodsAndOverrides {
   addCost(costData: Omit<ICost, 'owner'>): Promise<void>;
+  deleteCost(costId: string): Promise<void>;
   checkPassword(password: string): Promise<boolean>;
   getMonthCosts(month: number, year: number): Promise<IMonthCostDocument>;
 }
