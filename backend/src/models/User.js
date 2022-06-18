@@ -37,17 +37,7 @@ UserSchema.virtual('fullName')
 
 // Instance Methods
 
-UserSchema.method('addCost', async function ({ category, price, description }) {
-  const cost = new Cost({
-    category,
-    price,
-    description,
-    owner: this._id,
-  });
-
-  await cost.save().catch(() => {
-    throw new Error('Could not add cost! Failed at saving cost.');
-  });
+UserSchema.method('addCost', async function (cost) {
 
   const monthYear = getFormattedDate(cost.createdAt);
 
