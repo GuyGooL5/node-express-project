@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
-const MonthCostSchema = new mongoose.Schema({
-  sum: Number(),
-  costs: [{ type: mongoose.Types.ObjectId, ref: 'Cost' }],
-});
+const MonthCostSchema = new mongoose.Schema(
+  {
+    sum: Number(),
+    costs: [{ type: mongoose.Types.ObjectId, ref: 'Cost' }],
+  },
+  {
+    autoCreate: false,
+  },
+);
 
-const MonthCost = mongoose.model('MonthCost', MonthCostSchema);
+const MonthCost = new mongoose.Model('MonthCost', MonthCostSchema);
 
 module.exports = {
   MonthCost,
