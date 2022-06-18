@@ -5,8 +5,8 @@ const withStopReturnErrorHandler = (fn) => async (req, res, next) =>
     res.status(500).json({ error: err.message });
   });
 
-const withStopErrorHandler = (fn) => async (req, res) =>
-  fn(req, res).catch(() =>
+const withStopErrorHandler = (fn) => async (req, res, next) =>
+  fn(req, res, next).catch(() =>
     res.status(500).json({ error: 'Internal server error' }),
   );
 
