@@ -10,7 +10,7 @@ const addCost = async ({ category, price, description, userObjectId }) => {
     description,
     owner: mongoose.Types.ObjectId(userObjectId),
   });
-  const addedCost = await cost.save().catch(() => {
+  await cost.save().catch(() => {
     throw new Error('Could not add cost! Failed at saving cost.');
   });
 
@@ -18,21 +18,21 @@ const addCost = async ({ category, price, description, userObjectId }) => {
     _id: mongoose.Types.ObjectId(userObjectId),
   });
 
-  const currMonthYear = getFormattedDate(addedCost.createdAt);
+  const currMonthYear = getFormattedDate(cost.createdAt);
 
   const { sum: prevSum, costs: prevCosts } = user.monthlyCosts
     .get(currMonthYear)
     ?.toJSON() ?? { sum: 0, costs: [] };
 
   const nextMonthlyCost = new MonthCost({
-    sum: prevSum + addedCost.price,
-    costs: [...prevCosts, addedCost._id],
+    sum: prevSum + cost.price,
+    costs: [...prevCosts, cost._id],
   });
 
   user.monthlyCosts.set(currMonthYear, nextMonthlyCost);
 
   user.save().catch(() => {
-    Cost.deleteOne({ _id: mongoose.Types.ObjectId(addedCost._id) })
+    Cost.deleteOne({ _id: mongoose.Types.ObjectId(cost._id) })
       .then(() => {
         throw new Error("Failed at adding cost to user's monthly costs!");
       })

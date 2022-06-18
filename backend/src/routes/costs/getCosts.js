@@ -11,12 +11,12 @@ const getCosts = async (req, res) => {
   const user = await User.findById(userId);
   if (!user) return res.status(500).json({ error: 'User not found' });
 
-  const costs = await user.getMonthCosts({
+  const monthlyCosts = await user.getMonthCosts({
     year: parseInt(year),
     month: parseInt(month),
   });
 
-  res.json({ costs });
+  res.json({ monthlyCosts, count: monthlyCosts.costs.length }); 
 };
 
 module.exports = withStopReturnErrorHandler(getCosts);

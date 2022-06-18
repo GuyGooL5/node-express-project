@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { MonthCostSchema } = require('./MonthCost');
+const { MonthCost, MonthCostSchema } = require('./MonthCost');
+const Cost = require('./Cost');
 
 const { hashPassword } = require('../utils/auth');
 
@@ -36,9 +37,44 @@ UserSchema.virtual('fullName')
 
 // Instance Methods
 
-UserSchema.method('addCost', function (cost) {
-  this.costs.push(cost);
-  return this.save();
+UserSchema.method('addCost', async function ({ category, price, description }) {
+  const cost = new Cost({
+    category,
+    price,
+    description,
+    owner: this._id,
+  });
+
+  await cost.save().catch(() => {
+    throw new Error('Could not add cost! Failed at saving cost.');
+  });
+
+  const currMonthYear = getFormattedDate(cost.createdAt);
+
+  const { sum: prevSum, costs: prevCosts } = this.monthlyCosts
+    .get(currMonthYear)
+    ?.toJSON() ?? { sum: 0, costs: [] };
+
+  this.monthlyCosts.set(
+    currMonthYear,
+    new MonthCost({
+      sum: prevSum + cost.price,
+      costs: [...prevCosts, cost._id],
+    }),
+  );
+
+  await this.save().catch(() => {
+    Cost.deleteOne({ _id: mongoose.Types.ObjectId(cost._id) })
+      .then(() => {
+        throw new Error("Failed at adding cost to user's monthly costs!");
+      })
+      .catch(() => {
+        throw new Error(
+          "Failed at adding cost to user's monthly costs! Failed at deleting cost from database!",
+        );
+      });
+  });
+  return cost.toJSON();
 });
 
 UserSchema.method('checkPassword', async function (password) {
@@ -67,3 +103,9 @@ UserSchema.statics.findByIdNumber = function (idNumber) {
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
+
+const getFormattedDate = function (date) {
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  return `${month}_${year}`;
+};
