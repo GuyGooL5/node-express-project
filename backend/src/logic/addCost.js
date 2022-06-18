@@ -20,13 +20,13 @@ const addCost = async ({ category, sum, description, userObjectId }) => {
 
   const currMonthYear = getFormattedDate(addedCost.createdAt);
 
-  const currMonthCost = user.monthlyCosts.get(currMonthYear);
+  const { sum: prevSum, costs: prevCosts } = user.monthlyCosts
+    .get(currMonthYear)
+    ?.toJSON() ?? { sum: 0, costs: [] };
 
   const nextMonthlyCost = new MonthCost({
-    sum: (currMonthCost?.sum ?? 0) + addedCost.sum,
-    costs: (currMonthCost?.costs ?? []).push(
-      mongoose.Types.ObjectId(addedCost._id),
-    ),
+    sum: prevSum + addedCost.sum,
+    costs: [...prevCosts, addedCost._id],
   });
 
   user.monthlyCosts.set(currMonthYear, nextMonthlyCost);

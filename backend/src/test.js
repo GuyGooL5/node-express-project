@@ -5,7 +5,7 @@ const Cost = require('./models/Cost');
 const addCost = require('./logic/addCost');
 const { MonthCost, MonthCostSchema } = require('./models/MonthCost');
 const mongoose = require('mongoose');
-const { getReport } = require('./logic/getReport');
+const getReport = require('./logic/getReport');
 
 const { DB_HOST, DB_PASSWORD, DB_USERNAME, DB_NAME } = env;
 
