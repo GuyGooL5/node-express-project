@@ -1,14 +1,11 @@
 const authenticate = require('../middlewares/authenticate');
 
-const auth = require('./auth');
-const login = require('./login');
-
-const costsRouter = require('./costs');
-
 const apiRouter = require('express').Router();
 
-apiRouter.post('/login', login);
-apiRouter.get('/auth', authenticate, auth);
-apiRouter.use('/costs', authenticate, costsRouter);
+apiRouter.post('/login', require('./login'));
+apiRouter.post('/register', require('./register'));
+apiRouter.get('/auth', authenticate, require('./auth'));
+
+apiRouter.use('/costs', authenticate, require('./costs'));
 
 module.exports = apiRouter;

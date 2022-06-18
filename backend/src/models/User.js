@@ -5,7 +5,7 @@ const { MonthCostSchema } = require('./MonthCost');
 const { hashPassword } = require('../utils/auth');
 
 const UserSchema = new mongoose.Schema({
-  idNumber: { type: String, required: true },
+  idNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true, set: hashPassword },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
   monthlyCosts: {
     type: Map,
     of: MonthCostSchema,
+    default: () => new Map(),
   },
 });
 
