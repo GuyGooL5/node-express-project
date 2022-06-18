@@ -8,7 +8,7 @@ const CostSchema = new mongoose.Schema(
       enum: ['food', 'transport', 'house', 'maintenance', 'other'],
     },
     description: { type: String, required: true },
-    sum: { type: Number, required: true },
+    price: { type: Number, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'users' },
   },
   { timestamps: true },

@@ -44,7 +44,7 @@ UserSchema.method('checkPassword', async function (password) {
   return bcrypt.compare(password, this.password);
 });
 
-UserSchema.method('getMonthCosts', async function (month, year) {
+UserSchema.method('getMonthCosts', async function ({ year, month }) {
   month = ('0' + month).slice(-2);
   const monthYear = `${month}_${year}`;
 

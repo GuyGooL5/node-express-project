@@ -3,15 +3,18 @@ const { withStopReturnErrorHandler } = require('../../handlers/errorHandlers');
 
 const getCosts = async (req, res) => {
   const { userId } = req.user;
-  const { year, months } = req.query;
+  const { year, month } = req.query;
 
-  if (months && !year)
-    return res.status(400).json({ error: 'Year is required' });
+  if (!month || !year)
+    return res.status(400).json({ error: 'Month and year are required' });
 
-  return res.json({ year, months });
   const user = await User.findById(userId);
+  if (!user) return res.status(500).json({ error: 'User not found' });
 
-  const costs = await user.getCosts();
+  const costs = await user.getMonthCosts({
+    year: parseInt(year),
+    month: parseInt(month),
+  });
 
   res.json({ costs });
 };

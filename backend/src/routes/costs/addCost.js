@@ -1,20 +1,21 @@
 const Cost = require('../../models/Cost');
+
+const addCostLogic = require('../../logic/addCost');
+
 const { withStopReturnErrorHandler } = require('../../handlers/errorHandlers');
 
 const addCost = async (req, res) => {
   const { userId } = req.user;
-  const { category, description, sum } = req.body;
+  const { category, description, price } = req.body;
 
-  const cost = new Cost({
-    owner: userId,
+  const cost = await addCostLogic({
     category,
     description,
-    sum,
+    price,
+    userObjectId: userId,
   });
 
-  const savedCost = await cost.save();
-
-  res.json({ cost: savedCost });
+  res.json({ cost });
 };
 
 module.exports = withStopReturnErrorHandler(addCost);

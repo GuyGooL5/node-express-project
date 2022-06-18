@@ -1,17 +1,15 @@
 const { MODE } = require('../config/env');
 
-const withStopReturnErrorHandler = (fn) => async (req, res, next) =>
-  fn(req, res, next).catch((err) => {
-    res.status(500).json({ error: err.message });
-  });
-
-const withStopErrorHandler = (fn) => async (req, res, next) =>
-  fn(req, res, next).catch(() =>
-    res.status(500).json({ error: 'Internal server error' }),
-  );
-
+const withStopErrorHandler = (withDetail) => (fn) => async (req, res, next) => {
+  try {
+    return fn(req, res, next);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: withDetail ? err.message : 'Internal server error' });
+  }
+};
 module.exports = {
-  withStopReturnErrorHandler:
-    MODE !== 'production' ? withStopReturnErrorHandler : withStopErrorHandler,
-  withStopErrorHandler,
+  withStopReturnErrorHandler: withStopErrorHandler(MODE !== 'production'),
+  withStopErrorHandler: withStopErrorHandler(false),
 };

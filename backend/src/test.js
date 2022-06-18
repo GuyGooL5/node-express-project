@@ -16,6 +16,7 @@ const run = async () => {
     lastName: 'Tsitsiashvili',
     birthday: new Date(1994, 11, 20),
     maritalStatus: 'single',
+    monthlyCosts: new Map(),
   });
   await user.save();
   // const user = new User({

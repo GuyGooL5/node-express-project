@@ -3,10 +3,10 @@ const Cost = require('../models/Cost');
 const mongoose = require('mongoose');
 const { MonthCost } = require('../models/MonthCost');
 
-const addCost = async ({ category, sum, description, userObjectId }) => {
+const addCost = async ({ category, price, description, userObjectId }) => {
   const cost = new Cost({
     category,
-    sum,
+    price,
     description,
     owner: mongoose.Types.ObjectId(userObjectId),
   });
@@ -25,7 +25,7 @@ const addCost = async ({ category, sum, description, userObjectId }) => {
     ?.toJSON() ?? { sum: 0, costs: [] };
 
   const nextMonthlyCost = new MonthCost({
-    sum: prevSum + addedCost.sum,
+    sum: prevSum + addedCost.price,
     costs: [...prevCosts, addedCost._id],
   });
 

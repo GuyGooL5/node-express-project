@@ -5,12 +5,10 @@ const MonthCostSchema = new mongoose.Schema(
     sum: Number(),
     costs: [{ type: mongoose.Types.ObjectId, ref: 'Cost' }],
   },
-  {
-    autoCreate: false,
-  },
+  { autoCreate: false },
 );
 
-const MonthCost = new mongoose.Model('MonthCost', MonthCostSchema);
+const MonthCost = mongoose.model('MonthCost', MonthCostSchema);
 
 module.exports = {
   MonthCost,
