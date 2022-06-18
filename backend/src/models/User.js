@@ -145,6 +145,7 @@ const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
 
+// TODO: move to utility file
 const getFormattedDate = function (date) {
   const month = ('0' + (date.getMonth() + 1)).slice(-2);
   const year = date.getFullYear();
