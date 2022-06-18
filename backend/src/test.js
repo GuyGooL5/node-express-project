@@ -32,7 +32,11 @@ const run = async () => {
     userObjectId: '62acd05b4000bec793b382db',
   });
 
-  const report = await getReport('62acd05b4000bec793b382db', 6, 2022);
+  const user = await User.findOne({
+    _id: mongoose.Types.ObjectId('62acd05b4000bec793b382db'),
+  });
+
+  const report = await user.getMonthCosts(6, 2022);
   console.log(report);
 
   await mongoose.connection.close();
