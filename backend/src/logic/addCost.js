@@ -1,60 +1,53 @@
 const User = require('../models/User');
 const Cost = require('../models/Cost');
-const mongoose = require("mongoose");
-const {MonthCost} = require("../models/MonthCost");
+const mongoose = require('mongoose');
+const { MonthCost } = require('../models/MonthCost');
 
+const addCost = async ({ category, sum, description, userObjectId }) => {
+  const cost = new Cost({
+    category,
+    sum,
+    description,
+    owner: mongoose.Types.ObjectId(userObjectId),
+  });
+  const addedCost = await cost.save().catch(() => {
+    throw new Error('Could not add cost! Failed at saving cost.');
+  });
 
-const addCost = async function (category, sum, description, userObjectId) {
-    const cost = new Cost();
-    cost.category = category;
-    cost.sum = sum;
-    cost.description = description;
-    cost.owner = mongoose.Types.ObjectId(userObjectId);
-    let addedCost;
-    try {
-        addedCost = await cost.save();
-    } catch (e) {
-        console.error("Could not add cost! Failed at saving cost.");
-        return;
-    }
+  const user = await User.findOne({
+    _id: mongoose.Types.ObjectId(userObjectId),
+  });
 
-    const user = await User.findOne({_id: mongoose.Types.ObjectId(userObjectId)});
+  const currMonthYear = getFormattedDate(addedCost.createdAt);
 
-    const currMonthYear = getMonthYearFromDate(addedCost.createdAt);
+  const currMonthCost = user.monthlyCosts.get(currMonthYear);
 
-    let userMc = user.monthlyCosts;
-    let currMc = userMc.get(currMonthYear);
-    if (!currMc || currMc.sum === 0) {
-        currMc = new MonthCost({
-            sum: addedCost.sum,
-            costs: [
-                mongoose.Types.ObjectId(addedCost._id),
-            ]
-        });
-    } else {
-        currMc.sum = currMc.sum + addedCost.sum;
-        currMc.costs.push(mongoose.Types.ObjectId(addedCost._id));
-    }
+  const nextMonthlyCost = new MonthCost({
+    sum: (currMonthCost?.sum ?? 0) + addedCost.sum,
+    costs: (currMonthCost?.costs ?? []).push(
+      mongoose.Types.ObjectId(addedCost._id),
+    ),
+  });
 
-    user.monthlyCosts.set(currMonthYear, currMc);
-    try {
-        await user.save();
-    } catch (e) {
-        console.error("Could not add cost! Failed at saving user.");
-        try {
-            Cost.deleteOne({_id: mongoose.Types.ObjectId(addedCost._id)});
-        } catch (e) {
-            console.error("Failed to delete added cost!");
-        }
-    }
-}
+  user.monthlyCosts.set(currMonthYear, nextMonthlyCost);
 
+  user.save().catch(() => {
+    Cost.deleteOne({ _id: mongoose.Types.ObjectId(addedCost._id) })
+      .then(() => {
+        throw new Error("Failed at adding cost to user's monthly costs!");
+      })
+      .catch(() => {
+        throw new Error(
+          "Failed at adding cost to user's monthly costs! Failed at deleting cost from database!",
+        );
+      });
+  });
+};
 
-const getMonthYearFromDate = function (date) {
-    let splitDate = date.toLocaleString().split(',')[0].toString().split('/');
-    return splitDate[1] + "_" + splitDate[2];
-}
+const getFormattedDate = function (date) {
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  return `${month}_${year}`;
+};
 
-module.exports = {
-    addCost,
-}
+module.exports = addCost;
