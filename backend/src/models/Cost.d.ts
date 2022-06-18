@@ -13,7 +13,7 @@ export type CostCategory =
 export interface ICost {
   category: CostCategory;
   description: string;
-  sum: number;
+  price: number;
   owner: ObjectId;
 }
 

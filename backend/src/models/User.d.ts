@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { ICostDocument } from './Cost';
+import { ICost, ICostDocument } from './Cost';
 import { IMonthCostDocument } from './MonthCost';
 import { CreateDocument, CreateModel } from './util';
 
@@ -15,7 +15,8 @@ export interface IUser {
 interface IUserQueryHelpers {}
 
 export interface IUserMethodsAndOverrides {
-  addCost(objectId: string): Promise<void>;
+  addCost(costData: Omit<ICost, 'owner'>): Promise<void>;
+  deleteCost(costId: string): Promise<void>;
   checkPassword(password: string): Promise<boolean>;
   getMonthCosts(month: number, year: number): Promise<IMonthCostDocument>;
 }

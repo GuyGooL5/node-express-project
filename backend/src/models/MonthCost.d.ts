@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongoose';
+export { MonthCostSchema } from './MonthCost';
 import { CreateDocument, CreateModel } from './util';
 
 export interface IMonthCost {
@@ -28,7 +29,4 @@ export type IMonthCostModel = CreateModel<
   IMonthCostStatics
 >;
 
-declare const MonthCost: IMonthCostModel;
-
-//@ts-ignore
-export = MonthCost;
+export const MonthCost: IMonthCostModel;

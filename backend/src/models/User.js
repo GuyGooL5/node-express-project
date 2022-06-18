@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { MonthCostSchema } = require('./MonthCost');
+const { MonthCost, MonthCostSchema } = require('./MonthCost');
+const Cost = require('./Cost');
 
-const { hashPassword } = require('../utils/passwords');
+const { hashPassword } = require('../utils/auth');
 
 const UserSchema = new mongoose.Schema({
-  idNumber: { type: String, required: true },
+  idNumber: { type: String, required: true, unique: true },
   password: { type: String, required: true, set: hashPassword },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -18,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   monthlyCosts: {
     type: Map,
     of: MonthCostSchema,
+    default: () => new Map(),
   },
 });
 
@@ -35,16 +37,82 @@ UserSchema.virtual('fullName')
 
 // Instance Methods
 
-UserSchema.method('addCost', function (cost) {
-  this.costs.push(cost);
-  return this.save();
+UserSchema.method('addCost', async function (cost) {
+
+  const monthYear = getFormattedDate(cost.createdAt);
+
+  await this.populate(`monthlyCosts.${monthYear}.costs`);
+
+  const costs = this.monthlyCosts.get(monthYear)?.costs ?? [];
+  costs.push(cost);
+
+  const sum = costs.reduce((acc, curr) => acc + curr.price, 0);
+
+  this.monthlyCosts.set(
+    monthYear,
+    new MonthCost({ sum, costs: costs.map((costItem) => costItem._id) }),
+  );
+
+  await this.save().catch(() => {
+    Cost.deleteOne({ _id: mongoose.Types.ObjectId(cost._id) })
+      .then(() => {
+        throw new Error("Failed at adding cost to user's monthly costs!");
+      })
+      .catch(() => {
+        throw new Error(
+          "Failed at adding cost to user's monthly costs! Failed at deleting cost from database!",
+        );
+      });
+  });
+  return cost.toJSON();
+});
+
+UserSchema.method('deleteCost', async function (costId) {
+  const cost = await Cost.findById(costId);
+  if (!cost) {
+    throw new Error('Could not find cost to delete!');
+  }
+
+  const deleteResult = await Cost.deleteOne({ _id: cost._id }).catch((e) => {
+    throw new Error('Could not delete cost!');
+  });
+
+  const monthYear = getFormattedDate(cost.createdAt);
+
+  await this.populate(`monthlyCosts.${monthYear}.costs`);
+
+  const costs = this.monthlyCosts.get(monthYear)?.costs ?? [];
+
+  const filteredCosts = costs.filter(
+    (costItem) => costItem._id.toString() !== costId,
+  );
+
+  const sum = filteredCosts.reduce((acc, curr) => acc + curr.price, 0);
+
+  this.monthlyCosts.set(
+    monthYear,
+    new MonthCost({
+      sum,
+      costs: filteredCosts.map((costItem) => costItem._id),
+    }),
+  );
+
+  try {
+    await this.save();
+  } catch {
+    throw new Error(
+      "Failed at adding cost to user's monthly costs! Failed at deleting cost from database!",
+    );
+  }
+
+  return deleteResult;
 });
 
 UserSchema.method('checkPassword', async function (password) {
   return bcrypt.compare(password, this.password);
 });
 
-UserSchema.method('getMonthCosts', async function (month, year) {
+UserSchema.method('getMonthCosts', async function ({ year, month }) {
   month = ('0' + month).slice(-2);
   const monthYear = `${month}_${year}`;
 
@@ -66,3 +134,10 @@ UserSchema.statics.findByIdNumber = function (idNumber) {
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
+
+// TODO: move to utility file
+const getFormattedDate = function (date) {
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const year = date.getFullYear();
+  return `${month}_${year}`;
+};

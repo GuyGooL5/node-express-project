@@ -1,20 +1,36 @@
 const express = require('express');
-const env = require('./config/env');
+
+const bodyParser = require('body-parser');
+
+const {
+  PORT,
+  DB_HOST,
+  DB_PASSWORD,
+  DB_USERNAME,
+  DB_NAME,
+} = require('./config/env');
+
 const { connect } = require('./config/database');
 
-const { DB_HOST, DB_PASSWORD, DB_USERNAME, DB_NAME } = env;
+const run = async () => {
+  try {
+    await connect(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME);
+    console.log('Database connected');
+  } catch (error) {
+    console.log(error);
+    exit(1);
+  }
 
-connect(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME)
-  .then(() => console.log('Database connected'))
-  .catch((err) => console.log(err));
+  
+  const app = express();
 
-const app = express();
-const { PORT } = env;
+  app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.status(200).end('Hello World!');
-});
+  app.use('/api', require('./routes'));
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  });
+};
+
+run();
