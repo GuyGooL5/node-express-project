@@ -1,3 +1,5 @@
+import { IUser, IUserDocument } from '../models/User';
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/env');
@@ -9,3 +11,14 @@ interface IUserToken {
 
 export function generateToken(user: IUserToken): string;
 
+type IUserData = Pick<
+  IUser,
+  | 'idNumber'
+  | 'password'
+  | 'firstName'
+  | 'lastName'
+  | 'birthday'
+  | 'maritalStatus'
+>;
+
+export function extractUserData(user: IUserDocument): IUserData;

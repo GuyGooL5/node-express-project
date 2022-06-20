@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { generateToken } = require('../utils/auth');
+const { generateToken, extractUserData } = require('../utils/auth');
 
 const { withStopReturnErrorHandler } = require('../handlers/errorHandlers');
 
@@ -24,7 +24,8 @@ const register = async (req, res) => {
   }
 
   const token = generateToken({ userId: user.id });
-  return res.status(201).json({ token });
+  const userData = extractUserData(user);
+  return res.status(201).json({ token, user: userData });
 };
 
 module.exports = withStopReturnErrorHandler(register);

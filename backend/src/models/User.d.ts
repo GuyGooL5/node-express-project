@@ -3,13 +3,15 @@ import { ICost, ICostDocument } from './Cost';
 import { IMonthCostDocument } from './MonthCost';
 import { CreateDocument, CreateModel } from './util';
 
+export type MaritalStatus = 'married' | 'single' | 'divorced' | 'widowed';
+
 export interface IUser {
   idNumber: string;
   password: string;
   firstName: string;
   lastName: string;
   birthday: Date;
-  maritalStatus?: 'married' | 'single' | 'divorced' | 'widowed';
+  maritalStatus?: MaritalStatus;
   monthlyCosts: Record<string, IMonthCostDocument>;
 }
 interface IUserQueryHelpers {}

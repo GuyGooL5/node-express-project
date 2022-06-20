@@ -7,6 +7,10 @@ import { Container } from "@mui/material";
 
 import LoginForm, { LoginFormData } from "$/components/LoginForm";
 import routes from "$/config/routes";
+import { useMutation } from "react-query";
+import api from "$/api";
+import { LoginResponse } from "$/api/login";
+import { useAuth } from "$/context/AuthContext";
 
 const formSchema = yup.object().shape({
   username: yup
@@ -35,30 +39,32 @@ const LoginRoute = () => {
     resolver: yupResolver(formSchema),
     mode: "onSubmit",
   });
-
-  const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
-
-  const goToRegister = () => navigate(routes.REGISTER);
-
   const isFormValid = Object.keys(errors).length === 0;
 
-  const submitHandler = useCallback(
-    (data: LoginFormData) => {
-      setLoading(true);
-      const interval = setTimeout(() => setLoading(false), 2000);
-      return () => clearTimeout(interval);
+  const navigate = useNavigate();
+  const goToRegister = () => navigate(routes.REGISTER);
+
+  const { setToken, setUser } = useAuth();
+
+  const { mutate, isLoading } = useMutation<
+    LoginResponse,
+    unknown,
+    LoginFormData
+  >("login", ({ username, password }) => api.login(username, password), {
+    onSuccess: (data) => {
+      setToken(data.token);
+      setUser(data.user);
     },
-    [setLoading]
-  );
+  });
+
+  const submitHandler = (formData: LoginFormData) => mutate(formData);
 
   return (
     <Container maxWidth="sm">
       <LoginForm
         control={control}
         isValid={isFormValid}
-        loading={loading}
+        loading={isLoading}
         onSubmit={handleSubmit(submitHandler)}
         onRegister={goToRegister}
       />
