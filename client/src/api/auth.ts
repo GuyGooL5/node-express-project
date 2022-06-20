@@ -1,7 +1,7 @@
 import backendAPI from "$/config/backendAPI";
 import { MaritalStatus } from "$/config/constants";
 
-export interface LoginResponse {
+export interface AuthResponse {
   token: string;
   user: {
     idNumber: string;
@@ -12,12 +12,9 @@ export interface LoginResponse {
   };
 }
 
-const login = async (
-  username: string,
-  password: string
-): Promise<LoginResponse> => {
-  const response = await backendAPI.post("/api/login", { username, password });
+const auth = async (): Promise<AuthResponse> => {
+  const response = await backendAPI.get("/api/auth");
   return response.data;
 };
 
-export default login;
+export default auth;

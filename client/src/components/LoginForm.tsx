@@ -14,7 +14,7 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingButton from "./LoadingButton";
 
 export interface LoginFormData {
-  username: string;
+  idNumber: string;
   password: string;
 }
 interface LoginFormProps {
@@ -42,12 +42,13 @@ const LoginForm = ({
         <Stack direction="column" gap={2}>
           <Typography variant="h5">Hi, welcome back! ✋</Typography>
           <Controller
-            name="username"
+            name="idNumber"
             control={control}
             render={({ fieldState: { error } }) => (
               <TextField
-                label="Username"
-                {...control.register("username")}
+                required
+                label="ID Number"
+                {...control.register("idNumber")}
                 helperText={error?.message ?? " "}
                 error={!!error}
               />
@@ -58,6 +59,7 @@ const LoginForm = ({
             control={control}
             render={({ fieldState: { error } }) => (
               <TextField
+                required
                 label="Password"
                 {...control.register("password")}
                 helperText={error?.message ?? " "}

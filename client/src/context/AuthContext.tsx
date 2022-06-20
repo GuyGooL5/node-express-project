@@ -31,6 +31,8 @@ const initalValue: AuthContextData = {
 
 const Context = createContext(initalValue);
 
+setJWTHeader(LocalStorage.getItem("token"));
+
 const AuthContextProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
 

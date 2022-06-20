@@ -7,52 +7,52 @@ import { Container } from "@mui/material";
 import routes from "$/config/routes";
 
 import api from "$/api";
-import { LoginResponse } from "$/api/login";
 
 import { useAuth } from "$/context/AuthContext";
-import LoginForm, { LoginFormData } from "$/components/LoginForm";
-import loginFormSchema from "$/schemas/loginFormSchema";
 
-const LoginRoute = () => {
+import RegisterForm, { RegisterFormData } from "$/components/RegisterForm";
+import registerFormSchema from "$/schemas/registerFormSchema";
+import { RegisterResponse } from "$/api/register";
+
+const RegisterRoute = () => {
   const {
     formState: { errors },
     control,
     handleSubmit,
-  } = useForm<LoginFormData>({
-    resolver: yupResolver(loginFormSchema),
+  } = useForm<RegisterFormData>({
+    resolver: yupResolver(registerFormSchema),
     mode: "onSubmit",
   });
   const isFormValid = Object.keys(errors).length === 0;
 
   const navigate = useNavigate();
-  const goToRegister = () => navigate(routes.REGISTER);
+  const goToLogin = () => navigate(routes.LOGIN);
 
   const { setToken, setUser } = useAuth();
 
   const { mutate, isLoading } = useMutation<
-    LoginResponse,
+    RegisterResponse,
     unknown,
-    LoginFormData
-  >("login", ({ idNumber, password }) => api.login(idNumber, password), {
+    RegisterFormData
+  >("register", (data) => api.register(data), {
     onSuccess: (data) => {
       setToken(data.token);
       setUser(data.user);
     },
   });
-
-  const submitHandler = (formData: LoginFormData) => mutate(formData);
+  const submitHandler = (formData: RegisterFormData) => mutate(formData);
 
   return (
     <Container maxWidth="sm">
-      <LoginForm
+      <RegisterForm
         control={control}
         isValid={isFormValid}
         loading={isLoading}
         onSubmit={handleSubmit(submitHandler)}
-        onRegister={goToRegister}
+        onLogin={goToLogin}
       />
     </Container>
   );
 };
 
-export default LoginRoute;
+export default RegisterRoute;
