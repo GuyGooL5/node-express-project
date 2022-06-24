@@ -1,5 +1,13 @@
 import { Control, Controller, Path } from "react-hook-form";
-import { MenuItem, SelectProps, Select, Typography } from "@mui/material";
+import {
+  MenuItem,
+  SelectProps,
+  Select,
+  Typography,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+} from "@mui/material";
 
 interface ControlledSelectFieldProps<
   TFieldValues extends Record<string, any> = Record<string, any>,
@@ -16,6 +24,9 @@ const ControlledSelectField = function <TFieldValues, TOption>({
   control,
   name,
   options,
+  id,
+  fullWidth,
+  label,
   optionValueMap = (option) => `${option}`,
   optionRenderMap = (option) => <Typography>{`${option}`}</Typography>,
   ...props
@@ -25,16 +36,24 @@ const ControlledSelectField = function <TFieldValues, TOption>({
       name={name}
       control={control}
       render={({ fieldState: { error } }) => (
-        <Select {...props} {...control.register(name)} error={!!error}>
-          {options.map((option) => (
-            <MenuItem
-              key={optionValueMap(option)}
-              value={optionValueMap(option)}
-            >
-              {optionRenderMap(option)}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth={fullWidth} error={!!error}>
+          <InputLabel id={id}>{label}</InputLabel>
+          <Select
+            {...control.register(name)}
+            defaultValue={options[0]}
+            {...props}
+            fullWidth={fullWidth}
+            id={id}
+            label={label}
+            error={!!error}
+          >
+            {options.map((option) => (
+              <MenuItem key={optionValueMap(option)} value={optionValueMap(option)}>
+                {optionRenderMap(option)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       )}
     />
   );

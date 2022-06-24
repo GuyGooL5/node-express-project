@@ -1,11 +1,22 @@
 import { useState } from "react";
-import { Control } from "react-hook-form";
-import { Button, CardActions, IconButton, Paper, Stack, styled, Typography } from "@mui/material";
+import { Control, Controller } from "react-hook-form";
+import {
+  Button,
+  CardActions,
+  Grid,
+  IconButton,
+  Paper,
+  Stack,
+  styled,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoadingButton from "./LoadingButton";
 import { MaritalStatus } from "$/config/constants";
 import ControlledSelectField from "./ControlledSelectField";
 import ControlledTextField from "./ControlledTextField";
+import { DatePicker } from "@mui/x-date-pickers";
 
 export interface RegisterFormData {
   idNumber: string;
@@ -38,51 +49,92 @@ const RegisterForm = ({
   return (
     <StyledPaper elevation={4}>
       <form onSubmit={onSubmit}>
-        <Stack direction="column" gap={2}>
-          <Typography variant="h5">Hi, welcome back! ✋</Typography>
-          <ControlledTextField name="idNumber" control={control} label="ID Number" required />
-          <ControlledTextField
-            name="password"
-            control={control}
-            label="Password"
-            type={isPasswordVisible ? "text" : "password"}
-            required
-            InputProps={{
-              endAdornment: (
-                <IconButton onClick={togglePasswordVisibility}>
-                  {isPasswordVisible ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-          />
-          <ControlledTextField name="firstName" control={control} label="First Name" required />
-          <ControlledTextField name="lastName" control={control} label="Last Name" required />
+        <Grid container direction="row" spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h5">Hi, welcome back! ✋</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <ControlledTextField
+              fullWidth
+              name="idNumber"
+              control={control}
+              label="ID Number"
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ControlledTextField
+              fullWidth
+              name="password"
+              control={control}
+              label="Password"
+              type={isPasswordVisible ? "text" : "password"}
+              required
+              InputProps={{
+                endAdornment: (
+                  <IconButton onClick={togglePasswordVisibility}>
+                    {isPasswordVisible ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <ControlledTextField
+              fullWidth
+              name="firstName"
+              control={control}
+              label="First Name"
+              required
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <ControlledTextField
+              fullWidth
+              name="lastName"
+              control={control}
+              label="Last Name"
+              required
+            />
+          </Grid>
           {/* // TODO: Add Date Picker */}
-          <ControlledTextField
-            name="birthday"
-            control={control}
-            label="Birthday"
-            type="date"
-            required
-          />
-          <ControlledSelectField
-            name="maritalStatus"
-            control={control}
-            label="Marital Status"
-            required
-            options={[
-              MaritalStatus.Divorced,
-              MaritalStatus.Married,
-              MaritalStatus.Single,
-              MaritalStatus.Widowed,
-            ]}
-            optionRenderMap={(option) => (
-              <Typography variant="body1" fontWeight={700}>
-                {option}
-              </Typography>
-            )}
-          />
-        </Stack>
+          <Grid item xs={4}>
+            <Controller
+              name="birthday"
+              control={control}
+              render={({ field: { value, onChange }, fieldState: { error } }) => (
+                <DatePicker
+                  label="Birthday"
+                  value={value}
+                  onChange={onChange}
+                  renderInput={(params) => (
+                    <TextField required {...params} error={!!error} helperText={error?.message} />
+                  )}
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={8}>
+            <ControlledSelectField
+              fullWidth
+              name="maritalStatus"
+              control={control}
+              label="Marital Status"
+              required
+              options={[
+                MaritalStatus.Divorced,
+                MaritalStatus.Married,
+                MaritalStatus.Single,
+                MaritalStatus.Widowed,
+              ]}
+              optionRenderMap={(option) => (
+                <Typography variant="body1" fontWeight={200} textAlign="start">
+                  {uppercaseFirstLetter(option)}
+                </Typography>
+              )}
+            />
+          </Grid>
+        </Grid>
         <CardActions>
           <LoadingButton loading={loading} disabled={!isValid} type="submit" variant="contained">
             Register
@@ -100,3 +152,5 @@ export default RegisterForm;
 const StyledPaper = styled(Paper)`
   padding: ${({ theme }) => theme.spacing(2)};
 `;
+
+const uppercaseFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
