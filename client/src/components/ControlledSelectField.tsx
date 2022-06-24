@@ -40,12 +40,12 @@ const ControlledSelectField = function <TFieldValues, TOption>({
           <InputLabel id={id}>{label}</InputLabel>
           <Select
             {...control.register(name)}
-            defaultValue={options[0]}
             {...props}
             fullWidth={fullWidth}
             id={id}
             label={label}
             error={!!error}
+            defaultValue={options[0]}
           >
             {options.map((option) => (
               <MenuItem key={optionValueMap(option)} value={optionValueMap(option)}>
