@@ -12,6 +12,7 @@ import { LoginResponse } from "$/api/login";
 import { useAuth } from "$/context/AuthContext";
 import LoginForm, { LoginFormData } from "$/components/LoginForm";
 import loginFormSchema from "$/schemas/loginFormSchema";
+import Navbar from "$/components/Navbar";
 
 const LoginRoute = () => {
   const {
@@ -43,15 +44,18 @@ const LoginRoute = () => {
   const submitHandler = (formData: LoginFormData) => mutate(formData);
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 2 }}>
-      <LoginForm
-        control={control}
-        isValid={isFormValid}
-        loading={isLoading}
-        onSubmit={handleSubmit(submitHandler)}
-        onRegister={goToRegister}
-      />
-    </Container>
+    <>
+      <Navbar />
+      <Container maxWidth="sm" sx={{ mt: 2 }}>
+        <LoginForm
+          control={control}
+          isValid={isFormValid}
+          loading={isLoading}
+          onSubmit={handleSubmit(submitHandler)}
+          onRegister={goToRegister}
+        />
+      </Container>
+    </>
   );
 };
 

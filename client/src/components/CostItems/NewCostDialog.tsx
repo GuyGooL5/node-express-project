@@ -79,6 +79,7 @@ const NewCostDialog = ({ open, onClose, onSubmit }: NewCostDialogProps) => {
                 name="price"
                 label="Price"
                 type="number"
+                inputProps={{ min: 0, step: 0.01 }}
                 InputProps={{
                   endAdornment: (
                     <Typography variant="body1" fontWeight={700} color="textSecondary">

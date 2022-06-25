@@ -16,7 +16,7 @@ const Navbar = () => {
   return (
     <>
       <AppBar>
-        <Toolbar>
+        <Toolbar sx={{ gap: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }} textAlign="start">
             Costs Management
           </Typography>

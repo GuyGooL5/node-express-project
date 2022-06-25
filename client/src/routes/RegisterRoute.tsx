@@ -13,6 +13,7 @@ import { useAuth } from "$/context/AuthContext";
 import RegisterForm, { RegisterFormData } from "$/components/RegisterForm";
 import registerFormSchema from "$/schemas/registerFormSchema";
 import { RegisterResponse } from "$/api/register";
+import Navbar from "$/components/Navbar";
 
 const RegisterRoute = () => {
   const {
@@ -43,15 +44,18 @@ const RegisterRoute = () => {
   const submitHandler = (formData: RegisterFormData) => mutate(formData);
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 2 }}>
-      <RegisterForm
-        control={control}
-        isValid={isFormValid}
-        loading={isLoading}
-        onSubmit={handleSubmit(submitHandler)}
-        onLogin={goToLogin}
-      />
-    </Container>
+    <>
+      <Navbar />
+      <Container maxWidth="sm" sx={{ mt: 2 }}>
+        <RegisterForm
+          control={control}
+          isValid={isFormValid}
+          loading={isLoading}
+          onSubmit={handleSubmit(submitHandler)}
+          onLogin={goToLogin}
+        />
+      </Container>
+    </>
   );
 };
 
