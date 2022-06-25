@@ -5,8 +5,8 @@ import {
   Select,
   Typography,
   FormControl,
-  FormControlLabel,
   InputLabel,
+  FormHelperText,
 } from "@mui/material";
 
 interface ControlledSelectFieldProps<
@@ -53,6 +53,7 @@ const ControlledSelectField = function <TFieldValues, TOption>({
               </MenuItem>
             ))}
           </Select>
+          <FormHelperText>{error?.message ?? " "}</FormHelperText>
         </FormControl>
       )}
     />

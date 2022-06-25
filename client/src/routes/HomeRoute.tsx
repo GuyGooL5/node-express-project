@@ -12,10 +12,12 @@ import { flushSync } from "react-dom";
 import Navbar from "$/components/Navbar";
 import { Add } from "@mui/icons-material";
 import CostItemsCard from "$/components/CostItems/CostItemsCard";
+import NewCostDialog, { NewCostFormData } from "$/components/CostItems/NewCostDialog";
 
 const HomeRoute = () => {
   const { user } = useAuth();
   const [date, setDate] = useState<Date>(new Date());
+  const [open, setOpen] = useState(false);
 
   const [year, month] = [date.getFullYear(), date.getMonth() + 1];
 
@@ -32,6 +34,13 @@ const HomeRoute = () => {
     refetch();
   };
 
+  const handleCloseDialog = () => setOpen(false);
+  const handleOpenDialog = () => setOpen(true);
+
+  const handleSubmit = (formData: NewCostFormData) => {
+    console.log(formData);
+  };
+
   return (
     <div>
       <Navbar />
@@ -44,7 +53,7 @@ const HomeRoute = () => {
           inputFormat={"yyyy, MMM"}
           renderInput={(params) => <TextField {...params} />}
         />
-        <Button onClick={() => refetch()} startIcon={<Add />} variant="contained">
+        <Button onClick={handleOpenDialog} startIcon={<Add />} variant="contained">
           New Cost
         </Button>
       </StyledActionsStack>
@@ -54,6 +63,7 @@ const HomeRoute = () => {
         sum={data?.monthlyCosts.sum ?? 0}
         isLoading={isLoading}
       />
+      <NewCostDialog open={open} onClose={handleCloseDialog} onSubmit={handleSubmit} />
     </div>
   );
 };
