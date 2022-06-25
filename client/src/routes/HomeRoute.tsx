@@ -31,11 +31,17 @@ const HomeRoute = () => {
     return api.costs.getCosts(year, month);
   });
 
-  const { mutate, isLoading: isLoadingNewCost } = useMutation(api.costs.addCost, {
-    onSuccess: () => {
-      refetch();
-    },
-  });
+  const mutationOptions = { onSuccess: () => refetch() };
+
+  const { mutate: mutateAdd, isLoading: isLoadingNewCost } = useMutation(
+    api.costs.addCost,
+    mutationOptions
+  );
+
+  const { mutate: mutateDelete, isLoading: isLoadingDeleteCost } = useMutation(
+    api.costs.deleteCost,
+    mutationOptions
+  );
 
   const handleChangeDate = (_date: Date | null) => {
     flushSync(() => setDate(_date ?? new Date()));
@@ -44,7 +50,8 @@ const HomeRoute = () => {
 
   const handleCloseDialog = () => setOpen(false);
   const handleOpenDialog = () => setOpen(true);
-  const handleSubmit = mutate;
+  const handleAdd = mutateAdd;
+  const handleDelete = mutateDelete;
 
   return (
     <div>
@@ -66,9 +73,10 @@ const HomeRoute = () => {
         costs={costsData?.monthlyCosts.costs ?? []}
         date={date}
         sum={costsData?.monthlyCosts.sum ?? 0}
-        isLoading={isLoadingCosts || isLoadingNewCost}
+        isLoading={isLoadingCosts || isLoadingNewCost || isLoadingDeleteCost}
+        onDelete={handleDelete}
       />
-      <NewCostDialog open={open} onClose={handleCloseDialog} onSubmit={handleSubmit} />
+      <NewCostDialog open={open} onClose={handleCloseDialog} onSubmit={handleAdd} />
     </div>
   );
 };

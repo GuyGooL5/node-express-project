@@ -1,19 +1,33 @@
 import { format } from "date-fns";
-import { ListItem, Stack, Typography } from "@mui/material";
+import { IconButton, ListItem, Stack, Typography } from "@mui/material";
 
 import { CostCategory } from "$/types/costs";
+import useHover from "$/hooks/useHover";
+import { useRef } from "react";
+import { Delete } from "@mui/icons-material";
 
 export interface CostItemProps {
   category: CostCategory;
   description?: string;
   price: number;
   date: Date;
+  onDelete: () => void;
 }
 
-const CostItem = ({ category, description, price, date }: CostItemProps) => {
+const CostItem = ({ category, description, price, date, onDelete }: CostItemProps) => {
+  const ref = useRef(null);
+
+  const hover = useHover(ref);
+
   return (
-    <ListItem>
-      <Stack direction="row" justifyContent="space-between" gap={1} sx={{ flexGrow: 1 }}>
+    <ListItem ref={ref}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        gap={1}
+        sx={{ flexGrow: 1 }}
+      >
         <Typography variant="subtitle1" sx={{ flexGrow: 1 }} textAlign="start">
           {description}
         </Typography>
@@ -29,6 +43,9 @@ const CostItem = ({ category, description, price, date }: CostItemProps) => {
           <Typography variant="caption">{format(date, "dd/MM/yyyy")}</Typography>
           <Typography variant="body1" fontWeight={700}>{`${price}₪`}</Typography>
         </Stack>
+        <IconButton disabled={!hover} color="error" onClick={onDelete}>
+          <Delete />
+        </IconButton>
       </Stack>
     </ListItem>
   );

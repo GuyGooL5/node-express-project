@@ -9,6 +9,7 @@ interface CostItemsCardProps {
   sum: number;
   isLoading?: boolean;
   isError?: boolean;
+  onDelete: (_id: string) => void;
 }
 
 const CostItemsCard = ({
@@ -17,6 +18,7 @@ const CostItemsCard = ({
   sum,
   isLoading = false,
   isError = false,
+  onDelete,
 }: CostItemsCardProps) => {
   if (isLoading) return <LoadingIndicator />;
   if (isError) return <ErrorIndicator />;
@@ -25,7 +27,7 @@ const CostItemsCard = ({
     <Container>
       <Card elevation={2}>
         <CardHeader title={`Monthly Report for ${format(date, "yyyy/MM")}. Total sum: ${sum}₪`} />
-        <CostItemList costItems={costs} />
+        <CostItemList costItems={costs} onDelete={onDelete} />
       </Card>
     </Container>
   );
