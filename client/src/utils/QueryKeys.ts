@@ -1,5 +1,5 @@
 const QueryKeys = {
-  CostItems: (ownerId: string) => ["CostItems", ownerId],
+  CostItems: (ownerId: string, year: number, month: number) => ["CostItems", ownerId],
 };
 
 export default QueryKeys;
