@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { Button, Stack, styled, TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 
@@ -13,6 +13,7 @@ import Navbar from "$/components/Navbar";
 import { Add } from "@mui/icons-material";
 import CostItemsCard from "$/components/CostItems/CostItemsCard";
 import NewCostDialog, { NewCostFormData } from "$/components/CostItems/NewCostDialog";
+import { CostItemData } from "$/types/costs";
 
 const HomeRoute = () => {
   const { user } = useAuth();
@@ -21,13 +22,20 @@ const HomeRoute = () => {
 
   const [year, month] = [date.getFullYear(), date.getMonth() + 1];
 
-  const { data, isLoading, refetch } = useQuery(
-    QueryKeys.CostItems(user?.idNumber ?? "", year, month),
-    () => {
-      if (!year || !month) return;
-      return api.costs.getCosts(year, month);
-    }
-  );
+  const {
+    data: costsData,
+    isLoading: isLoadingCosts,
+    refetch,
+  } = useQuery(QueryKeys.CostItems(user?.idNumber ?? "", year, month), () => {
+    if (!year || !month) return;
+    return api.costs.getCosts(year, month);
+  });
+
+  const { mutate, isLoading: isLoadingNewCost } = useMutation(api.costs.addCost, {
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
   const handleChangeDate = (_date: Date | null) => {
     flushSync(() => setDate(_date ?? new Date()));
@@ -36,10 +44,7 @@ const HomeRoute = () => {
 
   const handleCloseDialog = () => setOpen(false);
   const handleOpenDialog = () => setOpen(true);
-
-  const handleSubmit = (formData: NewCostFormData) => {
-    console.log(formData);
-  };
+  const handleSubmit = mutate;
 
   return (
     <div>
@@ -58,10 +63,10 @@ const HomeRoute = () => {
         </Button>
       </StyledActionsStack>
       <CostItemsCard
-        costs={data?.monthlyCosts.costs ?? []}
+        costs={costsData?.monthlyCosts.costs ?? []}
         date={date}
-        sum={data?.monthlyCosts.sum ?? 0}
-        isLoading={isLoading}
+        sum={costsData?.monthlyCosts.sum ?? 0}
+        isLoading={isLoadingCosts || isLoadingNewCost}
       />
       <NewCostDialog open={open} onClose={handleCloseDialog} onSubmit={handleSubmit} />
     </div>

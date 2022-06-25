@@ -92,6 +92,7 @@ const NewCostDialog = ({ open, onClose, onSubmit }: NewCostDialogProps) => {
             <Grid item xs={12}>
               <ControlledTextField
                 fullWidth
+                required
                 multiline
                 control={control}
                 name="description"
