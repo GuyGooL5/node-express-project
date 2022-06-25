@@ -29,21 +29,21 @@ const LoginRoute = () => {
 
   const { setToken, setUser } = useAuth();
 
-  const { mutate, isLoading } = useMutation<
-    LoginResponse,
-    unknown,
-    LoginFormData
-  >("login", ({ idNumber, password }) => api.login(idNumber, password), {
-    onSuccess: (data) => {
-      setToken(data.token);
-      setUser(data.user);
-    },
-  });
+  const { mutate, isLoading } = useMutation<LoginResponse, unknown, LoginFormData>(
+    "login",
+    ({ idNumber, password }) => api.login(idNumber, password),
+    {
+      onSuccess: (data) => {
+        setToken(data.token);
+        setUser(data.user);
+      },
+    }
+  );
 
   const submitHandler = (formData: LoginFormData) => mutate(formData);
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{ mt: 2 }}>
       <LoginForm
         control={control}
         isValid={isFormValid}

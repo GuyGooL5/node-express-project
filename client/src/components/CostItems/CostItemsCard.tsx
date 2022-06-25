@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { Container, Card, CardHeader, Typography, CircularProgress } from "@mui/material";
 import CostItemList from "./CostItemList";
 import { CostItemData } from "$/types/costs";
+import DeleteCostDialog from "./DeleteCostDialog";
 
 interface CostItemsCardProps {
   costs: CostItemData[];
@@ -24,12 +25,14 @@ const CostItemsCard = ({
   if (isError) return <ErrorIndicator />;
   if (costs.length === 0) return <NoCostItems date={date} />;
   return (
-    <Container>
-      <Card elevation={2}>
-        <CardHeader title={`Monthly Report for ${format(date, "yyyy/MM")}. Total sum: ${sum}₪`} />
-        <CostItemList costItems={costs} onDelete={onDelete} />
-      </Card>
-    </Container>
+    <>
+      <Container>
+        <Card elevation={2}>
+          <CardHeader title={`Monthly Report for ${format(date, "yyyy/MM")}. Total sum: ${sum}₪`} />
+          <CostItemList costItems={costs} onDelete={onDelete} />
+        </Card>
+      </Container>
+    </>
   );
 };
 

@@ -30,20 +30,20 @@ const RegisterRoute = () => {
 
   const { setToken, setUser } = useAuth();
 
-  const { mutate, isLoading } = useMutation<
-    RegisterResponse,
-    unknown,
-    RegisterFormData
-  >("register", (data) => api.register(data), {
-    onSuccess: (data) => {
-      setToken(data.token);
-      setUser(data.user);
-    },
-  });
+  const { mutate, isLoading } = useMutation<RegisterResponse, unknown, RegisterFormData>(
+    "register",
+    (data) => api.register(data),
+    {
+      onSuccess: (data) => {
+        setToken(data.token);
+        setUser(data.user);
+      },
+    }
+  );
   const submitHandler = (formData: RegisterFormData) => mutate(formData);
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" sx={{ mt: 2 }}>
       <RegisterForm
         control={control}
         isValid={isFormValid}

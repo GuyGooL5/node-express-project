@@ -6,6 +6,9 @@ import AppRouter from "./routes/AppRouter";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
 import "./App.css";
+import { CssBaseline } from "@mui/material";
+import { ThemeContextProvider } from "./context/ThemeContext";
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -13,9 +16,12 @@ function App() {
     <div className="App">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <QueryClientProvider client={queryClient}>
-          <AuthContextProvider>
-            <AppRouter />
-          </AuthContextProvider>
+          <ThemeContextProvider>
+            <CssBaseline />
+            <AuthContextProvider>
+              <AppRouter />
+            </AuthContextProvider>
+          </ThemeContextProvider>
           <ReactQueryDevtools />
         </QueryClientProvider>
       </LocalizationProvider>

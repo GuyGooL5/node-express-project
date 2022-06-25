@@ -8,21 +8,16 @@
 
 interface LocalStorageData {
   token: string;
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "system";
 }
 
 class LocalStorage {
-  static getItem<K extends keyof LocalStorageData>(
-    key: K
-  ): LocalStorageData[K] | null {
+  static getItem<K extends keyof LocalStorageData>(key: K): LocalStorageData[K] | null {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   }
 
-  static setItem<K extends keyof LocalStorageData>(
-    key: K,
-    value: LocalStorageData[K]
-  ): void {
+  static setItem<K extends keyof LocalStorageData>(key: K, value: LocalStorageData[K]): void {
     const data = JSON.stringify(value);
     localStorage.setItem(key, data);
   }
