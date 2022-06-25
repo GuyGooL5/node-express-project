@@ -21,12 +21,16 @@ const run = async () => {
     exit(1);
   }
 
-  
   const app = express();
 
   app.use(bodyParser.json());
 
   app.use('/api', require('./routes'));
+
+  app.use(express.static(__dirname + '/dist'));
+  app.use('*', (req, res) => {
+    res.sendFile(__dirname + '/dist/index.html');
+  });
 
   app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
